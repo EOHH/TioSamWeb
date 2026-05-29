@@ -1,11 +1,12 @@
 export interface Product {
   id: string;
   name: string;
-  description: string;
+  description: string | null;
   price: number;
-  category: 'cards' | 'figures' | 'albums';
-  image: string;
+  category_id: string | null;
+  image_url: string | null;
   stock: number;
-  isNew?: boolean;
-  featured?: boolean;
+  is_new: boolean;
+  featured: boolean;
+  created_at: string;
 }

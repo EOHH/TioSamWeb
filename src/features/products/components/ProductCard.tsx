@@ -20,7 +20,7 @@ export function ProductCard({ product }: ProductCardProps) {
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image,
+      image: product.image_url || '',
     })
   }
 
@@ -28,13 +28,13 @@ export function ProductCard({ product }: ProductCardProps) {
     <Card className="overflow-hidden group border-border/50 bg-card/50 backdrop-blur-sm transition-all hover:border-primary/50 hover:shadow-md hover:shadow-primary/10">
       <div className="relative aspect-square overflow-hidden bg-secondary/50">
         <Image
-          src={product.image}
+          src={product.image_url || '/placeholder.png'}
           alt={product.name}
           fill
           className="object-cover transition-transform duration-500 group-hover:scale-105"
         />
         <div className="absolute top-2 left-2 flex flex-col gap-2">
-          {product.isNew && <Badge variant="default" className="bg-primary hover:bg-primary">New</Badge>}
+          {product.is_new && <Badge variant="default" className="bg-primary hover:bg-primary">New</Badge>}
           {product.stock < 10 && <Badge variant="destructive">Low Stock</Badge>}
         </div>
       </div>
@@ -42,7 +42,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <CardHeader className="p-4 pb-2">
         <div className="flex justify-between items-start gap-4">
           <div>
-            <p className="text-xs text-primary mb-1 uppercase tracking-wider font-semibold">{product.category}</p>
+            <p className="text-xs text-primary mb-1 uppercase tracking-wider font-semibold">{product.category_id || 'Item'}</p>
             <h3 className="font-bold leading-tight line-clamp-2" title={product.name}>
               {product.name}
             </h3>

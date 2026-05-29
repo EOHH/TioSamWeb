@@ -3,10 +3,16 @@
 import Link from 'next/link'
 import { ShoppingCart, User, Search } from 'lucide-react'
 import { useCartStore } from '@/store/useCartStore'
+import { useStore } from '@/hooks/useStore'
 import { Button } from '@/components/ui/button'
+import { useState } from 'react'
+import { CartDrawer } from '@/features/cart/components/CartDrawer'
 
 export default function Header() {
-  const totalItems = useCartStore((state) => state.totalItems())
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  
+  // Safely get totalItems handling hydration
+  const totalItems = useStore(useCartStore, (state) => state.totalItems())
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -36,13 +42,20 @@ export default function Header() {
           </div>
           
           <nav className="flex items-center space-x-2">
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-              <span className="sr-only">Account</span>
+            <Button variant="ghost" size="icon" asChild>
+              <Link href="/account">
+                <User className="h-5 w-5" />
+                <span className="sr-only">Account</span>
+              </Link>
             </Button>
-            <Button variant="ghost" size="icon" className="relative">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="relative"
+              onClick={() => setIsCartOpen(true)}
+            >
               <ShoppingCart className="h-5 w-5" />
-              {totalItems > 0 && (
+              {totalItems !== undefined && totalItems > 0 && (
                 <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
                   {totalItems}
                 </span>
@@ -52,6 +65,9 @@ export default function Header() {
           </nav>
         </div>
       </div>
+      
+      {/* Shopping Cart Drawer */}
+      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </header>
   )
 }
