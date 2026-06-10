@@ -19,7 +19,7 @@ export function AddToCartButton({ product }: AddToCartButtonProps) {
       id: product.id,
       name: product.name,
       price: product.price,
-      image: product.image_url || '',
+      image_url: product.image_url || '',
     })
     
     setIsAdded(true)

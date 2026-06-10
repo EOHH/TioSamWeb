@@ -40,9 +40,10 @@ export default async function ProductPage({ params }: ProductPageProps) {
         {/* Image Gallery */}
         <div className="relative aspect-square md:aspect-[4/5] rounded-2xl overflow-hidden bg-secondary/20 border border-border/50 shadow-2xl shadow-primary/5">
           <Image
-            src={product.image_url || '/placeholder.png'}
+            src={product.image_url || '/placeholder.svg'}
             alt={product.name}
             fill
+            sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover hover:scale-105 transition-transform duration-700"
             priority
           />
@@ -64,7 +65,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               {product.name}
             </h1>
             <p className="text-3xl font-bold text-foreground">
-              ${product.price.toFixed(2)}
+              S/ {product.price.toFixed(2)}
             </p>
           </div>
 

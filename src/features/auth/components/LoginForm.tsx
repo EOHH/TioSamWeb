@@ -26,12 +26,12 @@ export function LoginForm() {
     <Card className="w-full max-w-md border-primary/20 bg-card/80 backdrop-blur-md shadow-2xl shadow-primary/10">
       <CardHeader className="space-y-1 text-center">
         <CardTitle className="text-2xl font-bold tracking-tight text-primary">
-          {isLogin ? 'Welcome back' : 'Create an account'}
+          {isLogin ? 'Bienvenido de nuevo' : 'Crea una cuenta'}
         </CardTitle>
         <CardDescription>
           {isLogin 
-            ? 'Enter your credentials to access your collection' 
-            : 'Join Ediciones Tio Sam to start collecting'}
+            ? 'Ingresa tus credenciales para acceder a tu colección' 
+            : 'Únete a Ediciones Tio Sam para empezar a coleccionar'}
         </CardDescription>
       </CardHeader>
       <form action={handleSubmit}>
@@ -46,7 +46,7 @@ export function LoginForm() {
               id="email" 
               name="email" 
               type="email" 
-              placeholder="m@example.com" 
+              placeholder="correo@ejemplo.com" 
               required 
               className="bg-background/50 border-border/50 focus-visible:ring-primary/50"
             />
@@ -68,10 +68,10 @@ export function LoginForm() {
             type="submit" 
             disabled={isPending}
           >
-            {isPending ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+            {isPending ? 'Procesando...' : (isLogin ? 'Iniciar Sesión' : 'Registrarse')}
           </Button>
           <div className="text-sm text-center text-muted-foreground">
-            {isLogin ? "Don't have an account? " : "Already have an account? "}
+            {isLogin ? "¿No tienes una cuenta? " : "¿Ya tienes una cuenta? "}
             <button 
               type="button"
               onClick={() => {
@@ -80,7 +80,7 @@ export function LoginForm() {
               }} 
               className="text-primary hover:underline font-medium"
             >
-              {isLogin ? 'Sign up' : 'Sign in'}
+              {isLogin ? 'Registrarse' : 'Iniciar sesión'}
             </button>
           </div>
         </CardFooter>
