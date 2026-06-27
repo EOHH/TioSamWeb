@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Product } from '@/types/product'
 import { ProductCard } from '@/features/products/components/ProductCard'
 import { cn } from '@/lib/utils'
@@ -33,34 +34,58 @@ interface ProductShowcaseProps {
   products: Product[]
 }
 
-const CATEGORIES = ['Todos', 'Cartas', 'Figuras', 'Álbumes']
+const CATEGORIES = ['Todos', 'Cartas', 'Figuras', 'Álbumes', 'Sobres']
+
+const categoryToSlugMap: Record<string, string> = {
+  'Cartas': 'cards',
+  'Figuras': 'figures',
+  'Álbumes': 'albums',
+  'Sobres': 'sobres'
+}
+
+const slugToCategoryMap: Record<string, string> = Object.entries(categoryToSlugMap).reduce(
+  (acc, [key, value]) => ({ ...acc, [value]: key }),
+  {} as Record<string, string>
+)
 
 export function ProductShowcase({ products }: ProductShowcaseProps) {
   const [activeCategory, setActiveCategory] = useState('Todos')
+  const sectionRef = React.useRef<HTMLDivElement>(null)
+  const searchParams = useSearchParams()
+
+  React.useEffect(() => {
+    const categoryParam = searchParams.get('category')
+    
+    if (categoryParam) {
+      const targetUiCategory = slugToCategoryMap[categoryParam] || 'Todos'
+      if (activeCategory !== targetUiCategory) {
+        setActiveCategory(targetUiCategory)
+        // Only scroll if we changed category via URL parameter
+        setTimeout(() => {
+          sectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 100) // Small delay to let React render and grid calculate
+      }
+    } else {
+      if (activeCategory !== 'Todos') {
+        setActiveCategory('Todos')
+      }
+    }
+  }, [searchParams])
 
   const filteredProducts = useMemo(() => {
     if (activeCategory === 'Todos') return products
     
-    // Map Spanish display categories to likely database category IDs
-    const categoryMap: Record<string, string> = {
-      'Cartas': 'cards',
-      'Figuras': 'figures',
-      'Álbumes': 'albums'
-    }
-    
-    const targetCategory = categoryMap[activeCategory]
-    return products.filter(p => 
-      p.category_id === targetCategory || 
-      p.category_id?.toLowerCase() === activeCategory.toLowerCase()
-    )
+    const targetCategorySlug = categoryToSlugMap[activeCategory]
+    return products.filter(p => p.categories?.slug === targetCategorySlug)
   }, [products, activeCategory])
 
   return (
     <motion.div 
+      ref={sectionRef}
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
       transition={{ duration: 0.5 }}
-      className="flex flex-col gap-8 w-full"
+      className="flex flex-col gap-8 w-full scroll-mt-24"
     >
       {/* Filter Bar */}
       <div className="flex flex-wrap items-center gap-3">

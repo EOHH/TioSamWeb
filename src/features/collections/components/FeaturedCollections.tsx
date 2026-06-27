@@ -5,17 +5,13 @@ import Link from 'next/link'
 import { ArrowRight, ChevronRight } from 'lucide-react'
 import useEmblaCarousel from 'embla-carousel-react'
 import { cn } from '@/lib/utils'
+import { CollectionWithCount } from '@/types/collection'
 
-const collections = [
-  { id: 1, title: 'Naruto Shippuden', count: '120 productos', image: '/images/collections/naruto.png' },
-  { id: 2, title: 'Dragon Ball Super', count: '150 productos', image: '/images/collections/dragonball.png' },
-  { id: 3, title: 'One Piece', count: '96 productos', image: '/images/collections/onepiece.png' },
-  { id: 4, title: 'Demon Slayer', count: '85 productos', image: '/images/collections/demonslayer.png' },
-  { id: 5, title: 'Jujutsu Kaisen', count: '60 productos', image: '/images/collections/jujutsu.png' },
-  { id: 6, title: 'Bleach', count: '45 productos', image: '/images/collections/bleach.png' },
-]
+interface FeaturedCollectionsProps {
+  collections: CollectionWithCount[];
+}
 
-export function FeaturedCollections() {
+export function FeaturedCollections({ collections }: FeaturedCollectionsProps) {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     dragFree: true,
@@ -49,7 +45,7 @@ export function FeaturedCollections() {
       <div className="relative group">
         <div className="overflow-hidden -mx-4 px-4" ref={emblaRef}>
           <div className="flex touch-pan-y gap-4 md:gap-5">
-            {collections.map((collection) => (
+            {collections.filter(c => c.is_featured).map((collection) => (
               <div 
                 key={collection.id} 
                 className="relative flex-[0_0_260px] md:flex-[0_0_280px] lg:flex-[0_0_300px] min-w-0"
@@ -59,7 +55,7 @@ export function FeaturedCollections() {
                   {/* Background Image */}
                   <div 
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover/card:scale-110"
-                    style={{ backgroundImage: `url('${collection.image}')` }}
+                    style={{ backgroundImage: `url('${collection.image_url || '/images/placeholder.jpg'}')` }}
                   />
                   
                   {/* Gradient Overlay */}
@@ -71,10 +67,10 @@ export function FeaturedCollections() {
                   {/* Text Content */}
                   <div className="absolute bottom-0 left-0 p-5 flex flex-col justify-end w-full">
                     <h3 className="text-white font-bold text-base md:text-lg leading-tight mb-1 drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
-                      {collection.title}
+                      {collection.name}
                     </h3>
                     <p className="text-gray-400 text-xs font-medium drop-shadow-md">
-                      {collection.count}
+                      {collection.products?.[0]?.count || 0} productos
                     </p>
                   </div>
                 </Link>

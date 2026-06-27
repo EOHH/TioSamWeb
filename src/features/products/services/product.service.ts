@@ -15,8 +15,34 @@ export const getFeaturedProducts = async (): Promise<Product[]> => {
     }
 
     return data as Product[];
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.digest === 'DYNAMIC_SERVER_USAGE') {
+      throw err;
+    }
     console.error('Unexpected error fetching featured products:', err);
+    return [];
+  }
+};
+
+export const getRareProducts = async (): Promise<Product[]> => {
+  try {
+    const supabase = await createClient();
+    // Fetch products with rare rarities
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, collections(*)')
+      .in('rarity', ['Secreta', 'Ultra Rara', 'Super Rara'])
+      .order('rarity', { ascending: false }) // Just some ordering
+      .limit(4);
+
+    if (error) {
+      console.error('Error fetching rare products:', error.message);
+      return [];
+    }
+
+    return data as Product[];
+  } catch (err: any) {
+    if (err?.digest === 'DYNAMIC_SERVER_USAGE') throw err;
     return [];
   }
 };
@@ -26,7 +52,7 @@ export const getAllProducts = async (): Promise<Product[]> => {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from('products')
-      .select('*');
+      .select('*, categories(*), collections(*)');
 
     if (error) {
       console.error('Error fetching all products from Supabase:', error.message);
@@ -34,8 +60,34 @@ export const getAllProducts = async (): Promise<Product[]> => {
     }
 
     return data as Product[];
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.digest === 'DYNAMIC_SERVER_USAGE') {
+      throw err;
+    }
     console.error('Unexpected error fetching all products:', err);
+    return [];
+  }
+};
+
+export const getProductsByCategorySlug = async (slug: string): Promise<Product[]> => {
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('products')
+      .select('*, categories!inner(*), collections(*)')
+      .eq('categories.slug', slug);
+
+    if (error) {
+      console.error(`Error fetching products by category ${slug}:`, error.message);
+      return [];
+    }
+
+    return data as Product[];
+  } catch (err: any) {
+    if (err?.digest === 'DYNAMIC_SERVER_USAGE') {
+      throw err;
+    }
+    console.error(`Unexpected error fetching products by category ${slug}:`, err);
     return [];
   }
 };
@@ -55,7 +107,10 @@ export const getProductById = async (id: string): Promise<Product | null> => {
     }
 
     return data as Product;
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.digest === 'DYNAMIC_SERVER_USAGE') {
+      throw err;
+    }
     console.error(`Unexpected error fetching product ${id}:`, err);
     return null;
   }

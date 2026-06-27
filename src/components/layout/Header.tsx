@@ -9,20 +9,27 @@ import { useState, useEffect } from 'react'
 import { CartDrawer } from '@/features/cart/components/CartDrawer'
 import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
-import { usePathname } from 'next/navigation'
+import { usePathname, useSearchParams } from 'next/navigation'
 
 const navLinks = [
-  { name: 'Cartas', href: '/cards' },
-  { name: 'Figuras', href: '/figures' },
-  { name: 'Álbumes', href: '/albums' },
+  { name: 'Inicio', href: '/' },
+  { name: 'Colecciones', href: '/collections' },
+  { name: 'Cartas', href: '/cartas' },
+  { name: 'Álbumes', href: '/albumes' },
+  { name: 'Sobres', href: '/products?category=sobres' },
+  { name: 'Ofertas', href: '/offers' },
+  { name: 'Novedades', href: '/new' },
 ]
 
 export default function Header() {
   const [isCartOpen, setIsCartOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [hoveredPath, setHoveredPath] = useState<string | null>(null)
   
   const pathname = usePathname()
+  const searchParams = useSearchParams()
+  
+  // Create a string representing current path with query to check active states
+  const currentPathWithQuery = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`
   
   // Safely get totalItems handling hydration
   const totalItems = useStore(useCartStore, (state) => state.totalItems())
@@ -43,7 +50,7 @@ export default function Header() {
   // Close mobile menu on route change
   useEffect(() => {
     setIsMobileMenuOpen(false)
-  }, [pathname])
+  }, [pathname, searchParams])
 
   // Prevent scroll when mobile menu is open
   useEffect(() => {
@@ -57,76 +64,86 @@ export default function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-black/60 backdrop-blur-md border-b border-white/10 transition-colors duration-300">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4 md:px-8">
+      <header className="sticky top-0 z-50 w-full bg-[#050505]/95 backdrop-blur-md border-b border-white/5 transition-colors duration-300">
+        <div className="max-w-[100rem] mx-auto flex h-20 items-center justify-between px-4 sm:px-6 lg:px-8">
           
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center space-x-2 z-50">
-              <span className="font-bold text-xl tracking-tighter text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]">
-                Tio Sam
-              </span>
+          <div className="flex items-center">
+            {/* Premium Logo */}
+            <Link href="/" className="flex items-center gap-3 z-50 group">
+              <div className="w-10 h-10 bg-[#7c3aed] flex items-center justify-center transition-transform group-hover:scale-105" style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }}>
+                <span className="text-white font-black text-lg">TS</span>
+              </div>
+              <div className="flex flex-col leading-none">
+                <span className="text-[9px] font-bold text-white tracking-widest">EDICIONES</span>
+                <span className="text-xl font-black text-white tracking-wide">TIO SAM</span>
+              </div>
             </Link>
+          </div>
 
-            {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center space-x-2 ml-4" onMouseLeave={() => setHoveredPath(null)}>
+          {/* Desktop Navigation */}
+          <nav className="hidden lg:flex flex-1 justify-start items-center ml-12">
+            <ul className="flex items-center space-x-1">
               {navLinks.map((link) => {
-                const isActive = pathname === link.href
-                const isHovered = hoveredPath === link.href
+                // Determine if link is active
+                let isActive = false;
+                if (link.href === '/') {
+                  isActive = pathname === '/' && !searchParams.get('category');
+                } else if (link.href.includes('?')) {
+                  isActive = currentPathWithQuery === link.href;
+                } else {
+                  isActive = pathname.startsWith(link.href);
+                }
                 
                 return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="relative px-4 py-2 text-sm font-medium transition-colors rounded-md"
-                    onMouseEnter={() => setHoveredPath(link.href)}
-                  >
-                    <span className={cn(
-                      "relative z-10 transition-colors duration-200",
-                      isActive || isHovered ? "text-white" : "text-white/60"
-                    )}>
+                  <li key={link.name} className="relative group px-1">
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        "relative flex items-center py-2 px-4 text-[13px] font-bold tracking-wide transition-all duration-300 rounded-full",
+                        isActive 
+                          ? "text-white bg-white/5" 
+                          : "text-gray-400 hover:text-white hover:bg-white/5"
+                      )}
+                    >
                       {link.name}
-                    </span>
-                    
-                    {/* Glowing underline via framer-motion */}
-                    {isHovered && (
-                      <motion.div
-                        layoutId="navbar-underline"
-                        className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary shadow-[0_0_12px_2px] shadow-primary/60"
-                        transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
-                      />
-                    )}
-                    
-                    {/* Static active indicator */}
-                    {isActive && !isHovered && (
-                      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-primary/40" />
-                    )}
-                  </Link>
+                      {/* Premium Active Line with Glow just below text */}
+                      {isActive && (
+                        <motion.div
+                          layoutId="active-nav-indicator"
+                          className="absolute -bottom-1 left-4 right-4 h-[2px] bg-[#8b5cf6] rounded-full shadow-[0_0_10px_2px_rgba(139,92,246,0.6)]"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        />
+                      )}
+                    </Link>
+                  </li>
                 )
               })}
-            </nav>
-          </div>
+            </ul>
+          </nav>
           
-          <div className="flex items-center space-x-2 md:space-x-4">
-            <div className="hidden md:flex w-full max-w-xs items-center relative group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40 group-focus-within:text-primary transition-colors" />
-              <input
-                type="search"
-                placeholder="Buscar artículos..."
-                className="flex h-9 w-full rounded-full border border-white/10 bg-white/5 px-4 py-1 pl-10 text-sm text-white placeholder:text-white/40 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 focus:bg-black/40"
-              />
-            </div>
-            
+          <div className="flex items-center justify-end space-x-2 md:space-x-4">
             <nav className="flex items-center gap-1 z-50">
-              <Button variant="ghost" size="icon" asChild className="text-white/70 hover:text-white hover:bg-white/10 rounded-full">
+              {/* Search Icon */}
+              <Button variant="ghost" size="icon" className="hidden sm:flex text-gray-300 hover:text-white hover:bg-white/5 rounded-full">
+                <Search className="h-5 w-5" />
+                <span className="sr-only">Buscar</span>
+              </Button>
+              
+              {/* User Icon */}
+              <Button variant="ghost" size="icon" asChild className="hidden sm:flex text-gray-300 hover:text-white hover:bg-white/5 rounded-full">
                 <Link href="/account">
                   <User className="h-5 w-5" />
-                  <span className="sr-only">Account</span>
+                  <span className="sr-only">Cuenta</span>
                 </Link>
               </Button>
+              
+              {/* Cart Icon */}
               <Button 
                 variant="ghost" 
                 size="icon" 
-                className="relative text-white/70 hover:text-white hover:bg-white/10 rounded-full"
+                className="relative text-gray-300 hover:text-white hover:bg-white/5 rounded-full"
                 onClick={() => setIsCartOpen(true)}
               >
                 <ShoppingCart className="h-5 w-5" />
@@ -137,11 +154,11 @@ export default function Header() {
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}
                       className={cn(
-                        "absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground shadow-lg shadow-primary/40",
+                        "absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#8b5cf6] text-[10px] font-bold text-white shadow-lg shadow-purple-900/40",
                         shouldBounce && "animate-bounce"
                       )}
                     >
-                      {totalItems}
+                      {totalItems > 99 ? '99+' : totalItems}
                     </motion.span>
                   )}
                 </AnimatePresence>
@@ -152,10 +169,10 @@ export default function Header() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="md:hidden text-white/70 hover:text-white hover:bg-white/10 rounded-full ml-1"
+                className="lg:hidden text-gray-300 hover:text-white hover:bg-white/5 rounded-full ml-2"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
               </Button>
             </nav>
           </div>
@@ -170,35 +187,44 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="fixed inset-0 top-[64px] z-40 bg-black/95 backdrop-blur-xl border-t border-white/10 flex flex-col md:hidden"
+            className="fixed inset-0 top-[80px] z-40 bg-[#050505]/98 backdrop-blur-xl border-t border-white/5 flex flex-col lg:hidden"
           >
-            <div className="flex flex-col p-6 space-y-8">
+            <div className="flex flex-col p-6 space-y-8 overflow-y-auto h-full">
+              {/* Mobile Search */}
               <div className="relative w-full">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
                 <input
                   type="search"
                   placeholder="Buscar artículos..."
-                  className="flex h-12 w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2 pl-11 text-base text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  className="flex h-14 w-full rounded-2xl border border-white/10 bg-[#111] px-4 py-2 pl-12 text-base text-white placeholder:text-gray-500 focus:outline-none focus:border-[#8b5cf6] focus:ring-1 focus:ring-[#8b5cf6] transition-all"
                 />
               </div>
               
-              <nav className="flex flex-col space-y-4">
+              <nav className="flex flex-col space-y-2">
                 {navLinks.map((link, i) => {
-                  const isActive = pathname === link.href
+                  let isActive = false;
+                  if (link.href === '/') {
+                    isActive = pathname === '/' && !searchParams.get('category');
+                  } else if (link.href.includes('?')) {
+                    isActive = currentPathWithQuery === link.href;
+                  } else {
+                    isActive = pathname.startsWith(link.href);
+                  }
+                  
                   return (
                     <motion.div
                       key={link.href}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.1 }}
+                      transition={{ delay: i * 0.05 }}
                     >
                       <Link
                         href={link.href}
                         className={cn(
-                          "flex items-center text-2xl font-medium py-3 px-4 rounded-xl transition-all",
+                          "flex items-center text-xl font-bold py-4 px-6 rounded-2xl transition-all",
                           isActive 
-                            ? "bg-primary/20 text-white shadow-[inset_0_0_10px_rgba(var(--primary),0.2)] border border-primary/20" 
-                            : "text-white/60 hover:text-white hover:bg-white/5"
+                            ? "bg-[#8b5cf6]/10 text-[#8b5cf6] border border-[#8b5cf6]/20" 
+                            : "text-gray-300 hover:text-white hover:bg-white/5"
                         )}
                       >
                         {link.name}
@@ -207,6 +233,16 @@ export default function Header() {
                   )
                 })}
               </nav>
+              
+              <div className="mt-auto pt-8 border-t border-white/10">
+                <Link
+                  href="/account"
+                  className="flex items-center justify-center w-full py-4 rounded-2xl border border-white/10 text-gray-300 hover:text-white hover:bg-white/5 font-semibold transition-colors"
+                >
+                  <User className="h-5 w-5 mr-3" />
+                  Mi Cuenta
+                </Link>
+              </div>
             </div>
           </motion.div>
         )}

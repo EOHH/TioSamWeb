@@ -65,7 +65,7 @@ export function FeaturedCarousel({ products }: FeaturedCarouselProps) {
       initial={{ opacity: 0 }} 
       animate={{ opacity: 1 }} 
       transition={{ duration: 0.5 }}
-      className="w-full relative mt-4 mb-8"
+      className="w-full relative mt-4"
     >
       <div className="flex items-center justify-between mb-6 px-4 md:px-8 lg:px-12">
         <div className="flex items-center gap-3">
