@@ -29,7 +29,7 @@ export default async function CardDetailPage({
 
   return (
     <div className="min-h-screen bg-[#050505] pb-24 pt-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         
         {/* Back Navigation */}
         <Link 

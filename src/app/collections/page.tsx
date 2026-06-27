@@ -21,7 +21,7 @@ export default async function CollectionsPage() {
 
   return (
     <div className="min-h-screen bg-[#050505] pt-12 pb-8">
-      <div className="max-w-[100rem] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         
         {/* Top Header Area with Real Stats */}
         <CollectionsHeader stats={stats} />

@@ -47,29 +47,29 @@ export default function Home() {
         <HeroBanner />
 
         {/* Featured Collections Section */}
-        <Suspense fallback={<div className="h-[400px] w-full max-w-[100rem] mx-auto bg-[#111] animate-pulse rounded-2xl" />}>
+        <Suspense fallback={<div className="h-[400px] w-full max-w-[1920px] mx-auto bg-[#111] animate-pulse rounded-2xl" />}>
           <HomeFeaturedCollections />
         </Suspense>
 
         {/* Featured Products Section */}
-        <section className="max-w-[100rem] mx-auto w-full">
+        <section className="max-w-[1920px] mx-auto w-full">
           <Suspense fallback={<FeaturedCarouselSkeleton />}>
             <FeaturedSection />
           </Suspense>
         </section>
         
         {/* Categories Section */}
-        <section className="max-w-[100rem] mx-auto w-full px-4 sm:px-6 lg:px-8 mt-8">
+        <section className="max-w-[1920px] mx-auto w-full px-4 sm:px-6 lg:px-8 mt-8">
           <Suspense fallback={<div className="h-[200px] bg-[#111111] animate-pulse rounded-2xl w-full" />}>
             <HomeCategoriesSection />
           </Suspense>
         </section>
-        <section className="max-w-[100rem] mx-auto w-full px-4 sm:px-6 lg:px-8 mt-8">
+        <section className="max-w-[1920px] mx-auto w-full px-4 sm:px-6 lg:px-8 mt-8">
           <Suspense fallback={<div className="h-[400px] bg-[#111] animate-pulse rounded-2xl w-full" />}>
             <HomeRareSection />
           </Suspense>
         </section>
-        <section className="max-w-[100rem] mx-auto w-full px-4 sm:px-6 lg:px-8 mt-12">
+        <section className="max-w-[1920px] mx-auto w-full px-4 sm:px-6 lg:px-8 mt-12">
           <PromoSection />
         </section>
       </div>
