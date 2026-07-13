@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+import { ShieldCheck, Star, Sparkles } from 'lucide-react'
 
 export type AlbumTopFilter = 'Todos' | 'Destacados' | 'Novedades'
 
@@ -9,30 +10,38 @@ interface AlbumsTopNavProps {
 }
 
 export function AlbumsTopNav({ activeFilter, setActiveFilter, counts }: AlbumsTopNavProps) {
-  const tabs: AlbumTopFilter[] = ['Todos', 'Destacados', 'Novedades']
+  const tabs = [
+    { id: 'Todos' as AlbumTopFilter, label: 'Todos los álbumes', icon: ShieldCheck },
+    { id: 'Destacados' as AlbumTopFilter, label: 'Destacados', icon: Star },
+    { id: 'Novedades' as AlbumTopFilter, label: 'Novedades', icon: Sparkles }
+  ]
 
   return (
-    <div className="flex items-center gap-2 mb-8 overflow-x-auto pb-2 hide-scrollbar">
+    <div className="flex items-center gap-3 mb-8 overflow-x-auto pb-2 hide-scrollbar">
       {tabs.map((tab) => {
-        const isActive = activeFilter === tab
+        const isActive = activeFilter === tab.id
+        const Icon = tab.icon
         return (
           <button
-            key={tab}
-            onClick={() => setActiveFilter(tab)}
+            key={tab.id}
+            onClick={() => setActiveFilter(tab.id)}
             className={cn(
-              "px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap flex items-center gap-2",
+              "px-5 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap flex items-center gap-3 border",
               isActive 
-                ? "bg-emerald-600 text-white shadow-[0_0_15px_rgba(52,211,153,0.4)]" 
-                : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10"
+                ? "bg-[#2e1065]/40 border-purple-500/50 text-white shadow-[0_0_20px_rgba(109,40,217,0.2)]" 
+                : "bg-black border-white/5 text-gray-400 hover:text-white hover:bg-white/5 hover:border-white/10"
             )}
           >
-            {tab}
-            <span className={cn(
-              "px-1.5 py-0.5 rounded-md text-[10px]",
-              isActive ? "bg-black/20 text-white" : "bg-white/10 text-gray-400"
-            )}>
-              {counts[tab]}
-            </span>
+            <Icon className={cn("w-4 h-4", isActive ? "text-purple-400" : "text-gray-500")} />
+            <div className="flex flex-col items-start">
+              <span className="leading-none mb-1">{tab.label}</span>
+              <span className={cn(
+                "text-[10px] font-medium leading-none",
+                isActive ? "text-purple-300" : "text-gray-500"
+              )}>
+                {counts[tab.id]} {counts[tab.id] === 1 ? 'álbum' : 'álbumes'}
+              </span>
+            </div>
           </button>
         )
       })}

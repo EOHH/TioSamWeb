@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ShoppingCart } from 'lucide-react'
+import { FavoriteButton } from '@/components/ui/FavoriteButton'
 
 interface AlbumsGridProps {
   products: Product[];
@@ -14,7 +15,7 @@ export function AlbumsGrid({ products, collections }: AlbumsGridProps) {
   
   if (products.length === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center py-20 text-center bg-[#09090b] border border-white/5 rounded-3xl">
+      <div className="flex-1 flex flex-col items-center justify-center py-20 text-center bg-[#0a0515] border border-white/5 rounded-3xl">
         <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
           <span className="text-2xl">📚</span>
         </div>
@@ -27,7 +28,7 @@ export function AlbumsGrid({ products, collections }: AlbumsGridProps) {
   }
 
   return (
-    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 content-start items-start">
+    <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-5 content-start items-start">
       {products.map((product, index) => {
         const colName = product.collections?.name || 'Ediciones Tio Sam';
         
@@ -37,14 +38,14 @@ export function AlbumsGrid({ products, collections }: AlbumsGridProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.05 }}
-            className="group relative flex flex-col bg-[#09090b] border border-white/5 rounded-2xl overflow-hidden hover:border-emerald-500/50 transition-colors shadow-lg"
+            className="group relative flex flex-col bg-[#0f0a1c] border border-white/5 rounded-2xl overflow-hidden hover:border-purple-500/40 transition-colors shadow-lg h-full"
           >
             {/* Top Image Section */}
-            <div className="relative w-full aspect-[4/5] bg-[#111] overflow-hidden p-3">
+            <div className="relative w-full aspect-[4/5] bg-black overflow-hidden">
               {/* Radial glow on hover */}
-              <div className="absolute inset-0 bg-emerald-500/0 group-hover:bg-emerald-500/10 transition-colors duration-500 z-10 pointer-events-none" />
+              <div className="absolute inset-0 bg-purple-500/0 group-hover:bg-purple-500/20 transition-colors duration-500 z-10 pointer-events-none mix-blend-overlay" />
               
-              <Link href={`/albumes/${product.id}`} className="relative block w-full h-full rounded-xl overflow-hidden border border-white/10 group-hover:border-emerald-500/30 transition-colors z-20">
+              <Link href={`/albumes/${product.id}`} className="relative block w-full h-full border-b border-white/5 z-20">
                 {product.image_url ? (
                   <Image 
                     src={product.image_url}
@@ -55,42 +56,51 @@ export function AlbumsGrid({ products, collections }: AlbumsGridProps) {
                     unoptimized={product.image_url.includes('pinimg.com')}
                   />
                 ) : (
-                  <div className="w-full h-full bg-white/5 flex items-center justify-center text-gray-600">
+                  <div className="w-full h-full flex items-center justify-center text-gray-600 bg-[#111]">
                     Sin imagen
                   </div>
                 )}
-
-                {/* Badges Overlay */}
-                <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-30 pointer-events-none">
-                  {product.is_new && (
-                    <span className="bg-cyan-500 text-black text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded shadow-lg">
-                      Nuevo
-                    </span>
-                  )}
-                  {product.featured && (
-                    <span className="bg-amber-500 text-black text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded shadow-lg flex items-center gap-1">
-                      <span>★</span> Destacado
-                    </span>
-                  )}
-                </div>
+                {/* Gradient overlay to dark bottom */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0f0a1c] via-transparent to-transparent opacity-80" />
               </Link>
+
+              {/* Badges Overlay */}
+              <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-30 pointer-events-none">
+                {product.is_new && (
+                  <span className="bg-[#00f0ff] text-black text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-sm shadow-lg">
+                    NUEVO
+                  </span>
+                )}
+                {product.featured && (
+                  <span className="bg-purple-600 text-white text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-sm shadow-lg flex items-center gap-1">
+                    DESTACADO
+                  </span>
+                )}
+              </div>
+
+              {/* Favorite Button */}
+              <FavoriteButton productId={product.id} />
             </div>
 
             {/* Bottom Content Section */}
-            <div className="flex flex-col flex-1 p-4">
-              <span className="text-emerald-500 text-[10px] font-bold uppercase tracking-widest mb-1">
-                {colName}
-              </span>
+            <div className="flex flex-col flex-1 p-5">
               
-              <Link href={`/albumes/${product.id}`} className="block mb-2 flex-1">
-                <h3 className="text-white font-bold text-sm leading-tight group-hover:text-emerald-400 transition-colors truncate">
+              <Link href={`/albumes/${product.id}`} className="block mb-2">
+                <h3 className="text-white font-bold text-sm leading-snug group-hover:text-purple-400 transition-colors line-clamp-2">
                   {product.name}
                 </h3>
               </Link>
               
-              <div className="flex items-end justify-between mt-auto">
+              <div className="mb-4">
+                <span className="inline-block bg-[#2e1065] border border-purple-500/30 text-purple-200 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                  {colName}
+                </span>
+                <p className="text-gray-500 text-xs mt-2">Álbum Oficial</p>
+              </div>
+              
+              <div className="flex items-end justify-between mt-auto pt-2">
                 <div className="flex flex-col">
-                  <span className="text-white font-black text-lg">
+                  <span className="text-white font-black text-lg tracking-tight">
                     S/ {product.price.toString()}
                   </span>
                   {product.stock <= 5 && product.stock > 0 && (
@@ -103,7 +113,7 @@ export function AlbumsGrid({ products, collections }: AlbumsGridProps) {
 
                 <button 
                   disabled={product.stock === 0}
-                  className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-emerald-600 hover:border-emerald-500 hover:shadow-[0_0_15px_rgba(52,211,153,0.4)] hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100 disabled:hover:bg-white/5 disabled:hover:border-white/10 disabled:hover:shadow-none"
+                  className="w-10 h-10 rounded-xl bg-purple-600 flex items-center justify-center text-white hover:bg-purple-500 hover:shadow-[0_0_20px_rgba(168,85,247,0.5)] hover:-translate-y-1 transition-all disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:bg-purple-600 disabled:hover:shadow-none shadow-lg"
                   aria-label="Añadir al carrito"
                 >
                   <ShoppingCart className="w-4 h-4" />
